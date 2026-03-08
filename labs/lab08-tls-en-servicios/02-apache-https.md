@@ -7,6 +7,8 @@ Ahora analizaremos la conexión TLS que establece el cliente con ese servidor.
 
 Utilizaremos herramientas como **OpenSSL** y **curl** para observar qué certificados se envían y qué parámetros criptográficos se negocian.
 
+Asegúrate de tener el servidor NGINX del ejercicio anterior en marcha. Los comandos de este ejercicio los ejecutas en la terminal del Codespace (en el host), no dentro de ningún contenedor; OpenSSL y curl se conectan a `localhost:8443` donde escucha NGINX.
+
 ---
 
 ### Paso 1 — Conectarse al servidor utilizando OpenSSL

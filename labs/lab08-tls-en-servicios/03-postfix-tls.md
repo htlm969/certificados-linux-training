@@ -7,11 +7,13 @@ Ahora realizaremos la conexión desde **otro contenedor Docker**, simulando el c
 
 Esto permite reproducir escenarios reales de comunicación entre servicios.
 
+Aquí a veces estarás en la terminal del Codespace y otras dentro del contenedor cliente; en cada paso te decimos dónde, para que no haya duda.
+
 ---
 
 ### Paso 1 — Identificar el contenedor del servidor NGINX
 
-Primero localiza el contenedor que ejecuta el servidor HTTPS.
+En la terminal del Codespace (host), localiza el contenedor que ejecuta el servidor HTTPS:
 
 ```bash
 docker ps
@@ -37,7 +39,7 @@ Esto indica que el puerto HTTPS del contenedor está expuesto en el puerto `8443
 
 ### Paso 2 — Crear un contenedor cliente temporal
 
-Lanzaremos un contenedor que actuará como cliente para probar la conexión TLS.
+En el host, lanza un contenedor que actuará como cliente; se abrirá una shell y quedarás dentro del contenedor:
 
 ```bash
 docker run -it --rm curlimages/curl sh
@@ -85,23 +87,13 @@ Esto confirma que la conexión TLS funciona correctamente aunque el cliente no c
 
 ### Paso 5 — Probar la conexión confiando en la CA del laboratorio
 
-Primero copia el certificado raíz desde el host.
-
-En otra terminal del Codespace ejecuta:
+Abre otra terminal del Codespace y muestra el certificado raíz para copiar su contenido:
 
 ```bash
 cat ~/pki-ca/ca.crt
 ```
 
-Copia el contenido completo del certificado.
-
-Dentro del contenedor cliente crea un archivo para ese certificado.
-
-```bash
-nano ca.crt
-```
-
-Pega el contenido del certificado y guarda el archivo.
+Vuelve a la shell del contenedor cliente (la del paso 2) y crea ahí un archivo con ese contenido. Si tiene `nano`, úsalo; si no, `cat > ca.crt`, pega y cierra con Ctrl+D. Luego, ya dentro del contenedor, prueba la conexión indicando la CA:
 
 Ahora realiza la conexión indicando explícitamente la CA.
 

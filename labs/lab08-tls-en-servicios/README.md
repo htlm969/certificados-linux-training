@@ -89,6 +89,8 @@ Servicio de VPN que utiliza certificados X.509 para autenticar servidores y clie
 
 Para simplificar el entorno utilizaremos **contenedores Docker**, lo que permite desplegar servicios rápidamente dentro del Codespace.
 
+Antes de liarte con NGINX y la inspección TLS, asegúrate de haber terminado el **Lab05** (así tendrás los certificados en `~/pki-labs/web-server`). Para el ejercicio de inspección hace falta además tener el servidor NGINX del 01 en marcha. En cada ficha te indicamos si lo que toca va en la terminal del Codespace o dentro de un contenedor, para que no haya duda de dónde ejecutar cada cosa.
+
 ---
 
 ## Herramientas utilizadas

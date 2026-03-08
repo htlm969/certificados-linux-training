@@ -9,6 +9,8 @@ En este ejercicio ejecutaremos un **servidor web NGINX dentro de Docker** utiliz
 
 Esto nos permitirá probar conexiones TLS entre sistemas dentro del entorno Codespace.
 
+Asegúrate de haber hecho antes el Lab05 (los tres ejercicios), para tener `server.crt`, `server.key` y `fullchain.crt` en `~/pki-labs/web-server`. Todo lo que hagas en este ejercicio va en la terminal del Codespace, en el directorio `~/tls-web` que creas en el paso 1; así, cuando arranques el contenedor, los volúmenes montan bien.
+
 ---
 
 ### Paso 1 — Preparar un directorio para el servidor web
@@ -113,7 +115,7 @@ Esta configuración indica a NGINX que escuche en el puerto 443 y utilice los ce
 
 ### Paso 5 — Iniciar el servidor NGINX con Docker
 
-Ejecuta el servidor utilizando Docker.
+Desde `~/tls-web` (para que los volúmenes monten bien), ejecuta el servidor con Docker:
 
 ```bash
 docker run -d \
@@ -137,7 +139,7 @@ Deberías ver un contenedor NGINX activo.
 
 ### Paso 6 — Probar la conexión HTTPS
 
-Desde el mismo entorno prueba a conectarte al servidor.
+Desde la terminal del Codespace (da igual el directorio), prueba a conectarte al servidor:
 
 ```bash
 curl https://localhost:8443
