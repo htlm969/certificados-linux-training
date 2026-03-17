@@ -70,9 +70,16 @@ El almacén consolidado de certificados de confianza del sistema se encuentra en
 Busca tu autoridad certificadora dentro de este archivo:
 
 ```bash id="qpxlfr"
-grep "Training Root CA" /etc/ssl/certs/ca-certificates.crt
+openssl x509 -in /usr/local/share/ca-certificates/training-root-ca.crt -noout -subject
 ```
 
+Anota el texto que aparece en `subject` (especialmente el `CN` que hayas utilizado al crear la CA raíz, por ejemplo `Training Root CA`) y úsalo para buscar dentro del almacén consolidado:
+
+```bash
+grep "<TU_COMMON_NAME_CA>" /etc/ssl/certs/ca-certificates.crt
+```
+
+Sustituye `<TU_COMMON_NAME_CA>` por el valor real de `CN` que hayas utilizado.  
 Si aparece una coincidencia, el certificado ha sido añadido correctamente al almacén de confianza.
 
 También puedes verificarlo utilizando OpenSSL contra ese almacén:
@@ -90,7 +97,10 @@ Si la salida indica `server.crt: OK`, confirma que el sistema reconoce nuestra a
 Ahora intenta verificar el certificado del servidor utilizando OpenSSL.
 
 ```bash id="dsmn4s"
-openssl verify ~/pki-labs/web-server/server.crt
+openssl verify \
+  -CAfile /etc/ssl/certs/ca-certificates.crt \
+  -untrusted ~/pki-ca/intermediate/intermediate.crt \
+  ~/pki-labs/web-server/server.crt
 ```
 
 Si la cadena de certificados está completa, la salida debería indicar:
