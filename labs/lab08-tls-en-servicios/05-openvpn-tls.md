@@ -13,22 +13,72 @@ Partiendo de tu PKI del curso:
 1. Genera una clave y CSR para el servidor VPN:
 
 ```bash
-cd ~/labs/pki        # ajusta esta ruta a tu estructura real
+cd ~/pki-ca        # ajusta esta ruta a tu estructura real
 openssl genpkey -algorithm RSA -out vpn-server.key
 openssl req -new -key vpn-server.key -out vpn-server.csr \
   -subj "/CN=vpn.lab.local"
 ```
 
-2. Firma la CSR con tu Intermediate CA:
+2. Crea un archivo de extensiones para un certificado **de servidor**.
+
+En el lab 04 creamos un archivo de extensiones para la CA intermedia (`intermediate/intermediate-ext.cnf`).
+Para firmar certificados de servicios (como OpenVPN) necesitamos otro archivo de extensiones distinto (porque el certificado final **no** debe ser CA).
+
+Crea el archivo `intermediate/server-ext.cnf` con este contenido:
+
+```bash
+cat > intermediate/server-ext.cnf <<'EOF'
+[ server_cert ]
+basicConstraints = critical, CA:false
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+EOF
+```
+
+> Si tu OpenVPN va a validarse por nombre (DNS), en TLS moderno suele ser necesario `subjectAltName`.
+> Puedes añadirlo ampliando el fichero, por ejemplo:
+>
+> ```text
+> subjectAltName = @alt_names
+>
+> [ alt_names ]
+> DNS.1 = vpn.lab.local
+> ```
+
+3. Firma la CSR con tu CA intermedia **aplicando estas extensiones**:
 
 ```bash
 openssl x509 -req -in vpn-server.csr \
-  -CA ca/intermediate-ca.crt -CAkey ca/intermediate-ca.key \
-  -CAcreateserial -out vpn-server.crt -days 365 -extfile openssl.cnf \
-  -extensions server_cert
+  -CA intermediate/intermediate.crt -CAkey intermediate/private/intermediate.key \
+  -CAcreateserial -out vpn-server.crt -days 365 \
+  -extfile intermediate/server-ext.cnf -extensions server_cert
 ```
 
-3. Genera también un certificado de cliente (`vpn-client.key`, `vpn-client.crt`) siguiendo el mismo flujo que utilizaste para certificados de servidor/cliente en laboratorios anteriores.
+4. Genera también un certificado de cliente (`vpn-client.key`, `vpn-client.crt`) siguiendo el mismo flujo.
+
+Si necesitas extensiones explícitas para cliente, crea también `intermediate/client-ext.cnf`:
+
+```bash
+cat > intermediate/client-ext.cnf <<'EOF'
+[ client_cert ]
+basicConstraints = critical, CA:false
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+EOF
+```
+
+Y firma la CSR del cliente con:
+
+```bash
+openssl x509 -req -in vpn-client.csr \
+  -CA intermediate/intermediate.crt -CAkey intermediate/private/intermediate.key \
+  -CAcreateserial -out vpn-client.crt -days 365 \
+  -extfile intermediate/client-ext.cnf -extensions client_cert
+```
 
 ---
 
