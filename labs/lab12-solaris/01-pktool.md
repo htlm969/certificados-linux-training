@@ -40,7 +40,54 @@ Estas herramientas nos permitirán simular un token PKCS#11 dentro del sistema.
 
 ---
 
-### Paso 2 — Inicializar un token PKCS#11
+### Paso 2 — Configurar SoftHSM
+
+SoftHSM necesita un fichero de configuración que indique dónde almacenar los
+tokens. Si al ejecutar `softhsm2-util` obtienes un error como
+`ERROR: Could not load the configuration` o
+`ERROR: Could not initialize the library`, sigue estos pasos.
+
+Crea el directorio de tokens y el fichero de configuración:
+
+```bash id="softhsm-conf"
+mkdir -p ~/.config/softhsm2/tokens
+
+cat > ~/.config/softhsm2/softhsm2.conf <<'EOF'
+directories.tokendir = /home/codespace/.config/softhsm2/tokens
+objectstore.backend = file
+log.level = INFO
+EOF
+```
+
+> Si tu usuario no es `codespace`, ajusta la ruta de `tokendir` a tu `$HOME`:
+>
+> ```bash
+> sed -i "s|/home/codespace|$HOME|" ~/.config/softhsm2/softhsm2.conf
+> ```
+
+Exporta la variable de entorno para que SoftHSM encuentre la configuración:
+
+```bash id="softhsm-env"
+export SOFTHSM2_CONF=~/.config/softhsm2/softhsm2.conf
+```
+
+> Añádelo a tu `~/.bashrc` si quieres que persista entre sesiones:
+>
+> ```bash
+> echo 'export SOFTHSM2_CONF=~/.config/softhsm2/softhsm2.conf' >> ~/.bashrc
+> ```
+
+Comprueba que SoftHSM carga correctamente:
+
+```bash id="softhsm-check"
+softhsm2-util --show-slots
+```
+
+Debería mostrar al menos un slot disponible (vacío) sin errores.
+
+---
+
+### Paso 3 — Inicializar un token PKCS#11
 
 Crea un nuevo token en SoftHSM.
 
@@ -69,7 +116,7 @@ training-token
 
 ---
 
-### Paso 3 — Generar un par de claves dentro del token
+### Paso 4 — Generar un par de claves dentro del token
 
 Utiliza `pkcs11-tool` para generar un par de claves RSA dentro del token.
 
@@ -88,7 +135,7 @@ Este comando crea un par de claves dentro del token PKCS#11.
 
 ---
 
-### Paso 4 — Listar las claves almacenadas
+### Paso 5 — Listar las claves almacenadas
 
 Muestra los objetos almacenados en el token.
 
@@ -110,7 +157,7 @@ Esto confirma que la clave se encuentra almacenada dentro del token PKCS#11.
 
 ---
 
-### Paso 5 — Relacionar el ejercicio con Solaris
+### Paso 6 — Relacionar el ejercicio con Solaris
 
 En Solaris, la herramienta equivalente sería:
 
