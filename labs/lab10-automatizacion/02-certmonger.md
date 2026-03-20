@@ -32,6 +32,35 @@ sudo apt install -y certmonger
 
 Una vez instalado, inicia el servicio.
 
+> **Requisito previo: D-Bus**
+>
+> certmonger necesita que el bus de mensajes **D-Bus** esté corriendo.
+> En la mayoría de distribuciones con escritorio o con systemd, D-Bus ya
+> está activo. En contenedores o entornos mínimos es posible que no lo esté.
+>
+> Comprueba si D-Bus está corriendo:
+>
+> ```bash
+> ps aux | grep dbus-daemon
+> ```
+>
+> Si no aparece, arráncalo antes de iniciar certmonger:
+>
+> ```bash
+> # Con systemd:
+> sudo systemctl start dbus
+>
+> # Con service:
+> sudo service dbus start
+>
+> # Manualmente (contenedores):
+> sudo mkdir -p /run/dbus
+> sudo dbus-daemon --system --fork
+> ```
+>
+> Sin D-Bus, `certmongerd` fallará al arrancar con errores de conexión
+> al bus del sistema.
+
 El comando para iniciar y comprobar el servicio depende del sistema de inicio
 que utilice tu distribución.
 
