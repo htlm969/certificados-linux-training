@@ -93,6 +93,31 @@ cat renew.log
 
 ### Paso 4 — Crear una tarea programada con cron
 
+> **En Codespaces y contenedores: cron no está instalado ni corriendo**
+>
+> Los entornos de GitHub Codespaces y muchos contenedores Docker no incluyen
+> `cron` por defecto. Si `crontab` no se encuentra, instálalo y arráncalo
+> manualmente:
+>
+> ```bash
+> # Instalar cron
+> sudo apt update && sudo apt install -y cron
+>
+> # Arrancar el demonio cron (no hay systemd en Codespaces)
+> sudo cron
+> ```
+>
+> Comprueba que está corriendo:
+>
+> ```bash
+> ps aux | grep cron
+> ```
+>
+> Si no ves un proceso `/usr/sbin/cron`, vuelve a ejecutar `sudo cron`.
+>
+> Ten en cuenta que en Codespaces el demonio cron **no sobrevive al reinicio
+> del contenedor**. Si recreas el Codespace, tendrás que arrancarlo de nuevo.
+
 Edita la tabla de tareas programadas.
 
 ```bash
